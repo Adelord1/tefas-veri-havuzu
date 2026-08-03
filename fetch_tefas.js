@@ -1,22 +1,22 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const fs = require('fs');
 
 (async () => {
     console.log("TEFAS'a bağlanılıyor...");
     try {
         const browser = await puppeteer.launch({ 
+            executablePath: '/usr/bin/google-chrome', // GitHub'ın kendi içindeki hazır Chrome
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
         });
         const page = await browser.newPage();
         
-        // TEFAS sayfasına gitmeye çalış
         await page.goto('https://www.tefas.gov.tr/FonVerileri.aspx', { waitUntil: 'domcontentloaded', timeout: 30000 });
         
         const title = await page.title();
         console.log("Başarıyla bağlanıldı! Sayfa Başlığı:", title);
 
-        // Test amaçlı sahte bir veri oluşturalım ki GitHub'ın dosya kaydetme yeteneğini de test edelim
+        // Test verisi oluştur
         const testVerisi = [
             { FonKodu: "TEST", Mesaj: "Sistem basariyla kuruldu!", Tarih: new Date().toISOString() }
         ];
