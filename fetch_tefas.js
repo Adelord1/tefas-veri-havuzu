@@ -6,15 +6,17 @@ const fs = require('fs');
     try {
         const browser = await puppeteer.launch({ 
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
         });
         const page = await browser.newPage();
         
+        // TEFAS sayfasına gitmeye çalış
         await page.goto('https://www.tefas.gov.tr/FonVerileri.aspx', { waitUntil: 'domcontentloaded', timeout: 30000 });
         
         const title = await page.title();
         console.log("Başarıyla bağlanıldı! Sayfa Başlığı:", title);
 
+        // Test amaçlı sahte bir veri oluşturalım
         const testVerisi = [
             { FonKodu: "TEST", Mesaj: "Sistem basariyla kuruldu!", Tarih: new Date().toISOString() }
         ];
