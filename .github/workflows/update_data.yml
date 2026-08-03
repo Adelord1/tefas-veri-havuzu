@@ -28,11 +28,11 @@ jobs:
       - name: TEFAS Verilerini Cek
         run: node fetch_tefas.js
 
-      - name: Degisiklikleri kaydet ve Github'a gonder
+      - name: Degisiklikleri Kaydet
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add tefas_verileri.json
-          git commit -m "TEFAS verileri güncellendi" || echo "Değişiklik yok"
+          git commit -m "TEFAS verileri güncellendi" || exit 0
           git pull --rebase origin main
           git push
