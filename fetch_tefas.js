@@ -1,13 +1,12 @@
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const fs = require('fs');
 
 (async () => {
     console.log("TEFAS'a bağlanılıyor...");
     try {
         const browser = await puppeteer.launch({ 
-            executablePath: '/usr/bin/google-chrome', // GitHub'ın kendi içindeki hazır Chrome
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
         const page = await browser.newPage();
         
@@ -16,7 +15,6 @@ const fs = require('fs');
         const title = await page.title();
         console.log("Başarıyla bağlanıldı! Sayfa Başlığı:", title);
 
-        // Test verisi oluştur
         const testVerisi = [
             { FonKodu: "TEST", Mesaj: "Sistem basariyla kuruldu!", Tarih: new Date().toISOString() }
         ];
