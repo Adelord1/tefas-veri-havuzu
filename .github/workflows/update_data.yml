@@ -3,7 +3,7 @@ name: TEFAS Veri Guncelleme
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 18 * * *'
+    - cron: '0 18 * * 1-5'
 
 jobs:
   update-data:
@@ -18,20 +18,19 @@ jobs:
         with:
           node-version: '20'
 
-    - name: Kütüphaneleri Kur
-        run: |
-          npm cache clean --force
-          npm install --no-fund --no-audit --verbose
+      - name: Kutuphaneleri Kur
+        run: npm install
+
+      - name: Puppeteer Chrome Kurulumu
+        run: npx puppeteer browsers install chrome
 
       - name: TEFAS Verilerini Cek
         run: node fetch_tefas.js
 
-      - name: Degisiklikleri Kaydet ve Githuba Gonder
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Degisiklikleri Kaydet
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "TEFAS verileri guncellendi" || echo "Degisiklik yok"
-          git push https://${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main
+          git add fon_verileri.json
+          git commit -m "Otomatik TEFAS Veri Guncellemesi" || echo "Degisiklik yok"
+          git push
