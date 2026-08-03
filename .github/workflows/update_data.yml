@@ -1,15 +1,19 @@
-name: Günlük TEFAS Veri Güncelleme
+name: TEFAS Veri Guncelleme
 
 on:
   schedule:
-    - cron: '30 18 * * *' 
-  workflow_dispatch: 
+    - cron: '0 18 * * *' # Her gun Turkiye saati ile 21:00'da calisir (UTC 18:00)
+  workflow_dispatch: # Manuel olarak butona basip calistirmamiza da olanak tanir
+
+permissions:
+  contents: write
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Depoyu Klonla
+      - name: Depoyu Klonla (Checkout)
         uses: actions/checkout@v3
 
       - name: Node.js Kurulumu
@@ -17,16 +21,16 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Bağımlılıkları Yükle
+      - name: Kutuphaneleri Kur
         run: npm install
 
-      - name: Verileri Çek ve Güncelle
+      - name: TEFAS Verilerini Cek
         run: node fetch_tefas.js
 
-      - name: Değişiklikleri Git'e Kaydet ve Yükle
+      - name: Degisiklikleri Kaydet ve GitHub'a Gonder
         run: |
-          git config --global user.name 'GitHub Action Bot'
-          git config --global user.email 'action@github.com'
-          git add data/ || true
-          git commit -m "Otomatik Günlük TEFAS Verisi" || echo "Değişiklik bulunamadı"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/
+          git commit -m "Otomatik guncelleme: TEFAS Fon Verileri" || echo "Degisiklik yok"
           git push
