@@ -22,7 +22,7 @@ jobs:
           node-version: '18'
 
       - name: Kutuphaneleri Kur
-        run: npm install
+        run: npm install --no-fund --no-audit
 
       - name: TEFAS Verilerini Cek
         run: node fetch_tefas.js
