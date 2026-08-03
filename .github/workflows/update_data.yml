@@ -21,8 +21,8 @@ jobs:
         with:
           node-version: '18'
 
-     - name: Kütüphaneleri kur
-        run: npm install --no-audit --no-fund --loglevel=info
+    - name: Kütüphaneleri kur
+  run: npm install --no-audit --no-fund --loglevel=info
 
       - name: TEFAS Verilerini Cek
         run: node fetch_tefas.js
