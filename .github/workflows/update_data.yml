@@ -18,8 +18,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Kutuphaneleri Kur
-        run: npm install
+    - name: Kütüphaneleri Kur
+        run: |
+          npm cache clean --force
+          npm install --no-fund --no-audit --verbose
 
       - name: TEFAS Verilerini Cek
         run: node fetch_tefas.js
