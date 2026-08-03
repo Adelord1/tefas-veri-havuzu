@@ -18,8 +18,9 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Kutuphaneleri Kur
-        run: npm install
+     - name: Kütüphaneleri kur
+        run: npm install --no-fund --no-audit --
+        loglevel=error
 
       - name: Puppeteer Chrome Kurulumu
         run: npx puppeteer browsers install chrome
