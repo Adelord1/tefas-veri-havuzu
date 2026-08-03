@@ -2,22 +2,20 @@ name: TEFAS Veri Guncelleme
 
 on:
   schedule:
-    - cron: '0 18 * * *' # Her gün 18:00 (UTC)
-  workflow_dispatch: # Manuel tetikleme butonu
-
-permissions:
-  contents: write # Bota GitHub'a dosya yükleme yetkisi verir
+    - cron: '0 18 * * 1-5' # Hafta içi her gün 18:00'da çalışır (UTC)
+  workflow_dispatch: # Manuel tetikleme için
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Repoya yazma izni
 
     steps:
       - name: Depoyu Klonla
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Git geçmişini tamamen çeker (Eşitleme için gerekli)
-          persist-credentials: true
+          fetch-depth: 0
 
       - name: Node.js Kurulumu
         uses: actions/setup-node@v4
@@ -34,15 +32,15 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          
-          # Oluşan json dosyasını ekle
           git add tefas_verileri.json
           
-          # Eğer dosyada değişiklik varsa commit et
-          git diff --quiet && git diff --staged --quiet || git commit -m "TEFAS verileri güncellendi"
-          
-          # GITHUB'DAKİ SON DEĞİŞİKLİKLERİ ÇEK VE EŞİTLE (Hatanın çözümü burası)
-          git pull --rebase origin main
-          
-          # Şimdi güncel dosyayı GitHub'a gönder
-          git push origin main
+          # Değişiklik yoksa hata vermemesi için kontrol
+          if git diff --staged --quiet; then
+            echo "Herhangi bir değişiklik yok."
+          else
+            git commit -m "TEFAS verileri güncellendi"
+            # Çakışmaları önlemek için önce depodaki son değişiklikleri çekiyoruz (işte sorunu çözecek kısım burası)
+            git pull --rebase origin main
+            # Ardından değişikliklerimizi gönderiyoruz
+            git push origin main
+          fi
