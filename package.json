@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "TEFAS Veri Havuzu",
   "main": "fetch_tefas.js",
-  "type": "module",
   "dependencies": {
     "puppeteer-core": "^22.15.0"
   }
