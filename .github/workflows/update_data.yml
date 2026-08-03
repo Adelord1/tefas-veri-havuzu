@@ -2,14 +2,15 @@ name: TEFAS Veri Guncelleme
 
 on:
   schedule:
-    - cron: '0 18 * * 1-5'
+    - cron: '0 18 * * *'
   workflow_dispatch:
 
+# Bu kısım GitHub Actions'a dosyaları depoya yazma/kaydetme izni verir
 permissions:
   contents: write
 
 jobs:
-  update-data:
+  guncelle:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,12 +35,17 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          
+
+          # Dosyayı ekle ve commit oluştur
           git add tefas_verileri.json
-          git commit -m "TEFAS verileri güncellendi" || echo "Değişiklik yok"
-          
+          git commit -m "TEFAS verileri güncellendi" || echo "Değişiklik yok, atlanıyor."
+
+          # Mevcut dalın adını al (genellikle main)
           BRANCH="${{ github.ref_name }}"
-          
-          git pull --rebase origin "$BRANCH" || (git rebase --abort && echo "Rebase başarısız" && exit 1)
-          
+
+          # Uzak sunucudaki güncel değişiklikleri çek ve yerel kodlarla birleştir (rebase)
+          git fetch origin "$BRANCH"
+          git rebase "origin/$BRANCH" || (git rebase --abort && echo "Rebase başarısız oldu" && exit 1)
+
+          # Yeni değişiklikleri depoya gönder
           git push origin "HEAD:$BRANCH"
