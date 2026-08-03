@@ -1,23 +1,25 @@
-name: Tefas Veri Guncelleme
+name: TEFAS Veri Guncelleme
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '0 18 * * *'
+    - cron: '0 18 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      
+
     steps:
-      - name: Depoyu klonla
+      - name: Depoyu Klonla
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: true
 
-      - name: Node.js kurulumu
+      - name: Node.js Kurulumu
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -32,7 +34,12 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
           git add tefas_verileri.json
-          git commit -m "TEFAS verileri güncellendi" || exit 0
-          git pull --rebase origin main
-          git push
+          git commit -m "TEFAS verileri güncellendi" || echo "Değişiklik yok"
+          
+          BRANCH="${{ github.ref_name }}"
+          
+          git pull --rebase origin "$BRANCH" || (git rebase --abort && echo "Rebase başarısız" && exit 1)
+          
+          git push origin "HEAD:$BRANCH"
