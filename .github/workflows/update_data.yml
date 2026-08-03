@@ -1,30 +1,33 @@
 name: TEFAS Veri Guncelleme
 
 on:
+  schedule:
+    - cron: '0 18 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  guncelle:
+  update_data:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Depoyu klonla
+      - name: Depoyu Klonla
         uses: actions/checkout@v4
 
-      - name: Node.js kurulumu
+      - name: Node.js Kurulumu
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Kutuphaneleri kur
+      - name: Kutuphaneleri Kur
         run: npm install
 
       - name: TEFAS Verilerini Cek
         run: node fetch_tefas.js
 
-      - name: Degisiklikleri kaydet ve Githuba gonder
+      - name: Degisiklikleri Kaydet ve GitHub'a Gonder
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
