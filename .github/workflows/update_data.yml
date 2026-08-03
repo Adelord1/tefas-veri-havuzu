@@ -1,36 +1,35 @@
 name: TEFAS Veri Guncelleme
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: '0 18 * * *' # Her gun Turkiye saati ile 21:00'da calisir (UTC 18:00)
-  workflow_dispatch: # Manuel olarak butona basip calistirmamiza da olanak tanir
-
-permissions:
-  contents: write
+    - cron: '0 18 * * *'
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Depoyu Klonla (Checkout)
-        uses: actions/checkout@v3
+      - name: Depoyu Klonla
+        uses: actions/checkout@v4
 
       - name: Node.js Kurulumu
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
-    - name: Kütüphaneleri kur
-  run: npm install --no-fund --no-audit
+      - name: Kutuphaneleri Kur
+        run: npm install
 
       - name: TEFAS Verilerini Cek
         run: node fetch_tefas.js
 
-      - name: Degisiklikleri Kaydet ve GitHub'a Gonder
+      - name: Degisiklikleri Kaydet ve Githuba Gonder
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/
-          git commit -m "Otomatik guncelleme: TEFAS Fon Verileri" || echo "Degisiklik yok"
-          git push
+          git add .
+          git commit -m "TEFAS verileri guncellendi" || echo "Degisiklik yok"
+          git push https://${GH_PAT}@github.com/${{ github.repository }}.git HEAD:main
