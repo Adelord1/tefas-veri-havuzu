@@ -1,0 +1,32 @@
+name: Günlük TEFAS Veri Güncelleme
+
+on:
+  schedule:
+    - cron: '30 18 * * *' 
+  workflow_dispatch: 
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu Klonla
+        uses: actions/checkout@v3
+
+      - name: Node.js Kurulumu
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Bağımlılıkları Yükle
+        run: npm install
+
+      - name: Verileri Çek ve Güncelle
+        run: node fetch_tefas.js
+
+      - name: Değişiklikleri Git'e Kaydet ve Yükle
+        run: |
+          git config --global user.name 'GitHub Action Bot'
+          git config --global user.email 'action@github.com'
+          git add data/ || true
+          git commit -m "Otomatik Günlük TEFAS Verisi" || echo "Değişiklik bulunamadı"
+          git push
