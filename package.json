@@ -1,12 +1,12 @@
 {
   "name": "tefas-veri-havuzu",
   "version": "1.0.0",
-  "description": "TEFAS Veri Çekici",
+  "description": "TEFAS veri cekme",
+  "main": "fetch_tefas.js",
   "scripts": {
     "start": "node fetch_tefas.js"
   },
   "dependencies": {
-    "axios": "^1.6.0",
-    "puppeteer": "^21.0.0"
+    "puppeteer": "^22.12.1"
   }
 }
