@@ -33,13 +33,18 @@ jobs:
       - name: Degisiklikleri Kaydet
         run: |
           git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           
-          git add tefas_verileri.json
-          git commit -m "TEFAS verileri güncellendi" || echo "Değişiklik yok"
-          
-          # Remote (Uzak) depodaki değişiklikleri çekip senkronize ediyoruz
-          git pull --rebase origin main
-          
-          # Senkronize edildikten sonra güncel veriyi gönderiyoruz
-          git push origin main
+          # Sadece ilgili dosyamızda değişiklik olup olmadığını kontrol ediyoruz
+          if [ -n "$(git status --porcelain tefas_verileri.json)" ]; then
+            git add tefas_verileri.json
+            git commit -m "TEFAS verileri güncellendi"
+            
+            # Uzak depodaki (remote) değişiklikleri çek ve üste yaz (-X theirs komutuyla çakışma olursa bizim ürettiğimiz güncel JSON dosyasını kabul etmesini sağlıyoruz)
+            git pull --rebase -X theirs origin main
+            
+            # Güncel veriyi gönder
+            git push origin main
+          else
+            echo "Veriler zaten güncel, commit edilecek bir değişiklik yok."
+          fi
