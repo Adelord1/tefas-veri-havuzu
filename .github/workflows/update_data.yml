@@ -1,31 +1,35 @@
-name: Tefas Veri Guncelleme
+name: TEFAS Veri Guncelleme
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 18 * * *' # Her gün akşam çalışır
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write  # İŞTE BU SATIR ROBOTA KAYDETME YETKİSİ VERİR
+      
     steps:
-    - name: Depoyu Klonla
-      uses: actions/checkout@v4
+      - name: Depoyu klonla
+        uses: actions/checkout@v3
 
-    - name: Node.js Kurulumu
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      - name: Node.js kurulumu
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-    - name: Kutuphaneleri Kur
-      run: npm install
+      - name: Kutuphaneleri kur
+        run: npm install puppeteer
 
-    - name: TEFAS Verilerini Cek
-      run: node fetch_tefas.js
+      - name: TEFAS Verilerini Cek
+        run: node fetch_tefas.js
 
-    - name: Degisiklikleri Kaydet
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add tefas_verileri.json
-        git commit -m "TEFAS verileri güncellendi" || echo "Degisiklik yok"
-        git push
+      - name: Degisiklikleri kaydet ve Github'a gonder
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add tefas_verileri.json
+          git commit -m "TEFAS verileri güncellendi" || echo "Degisiklik yok"
+          git push
